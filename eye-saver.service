@@ -1,0 +1,18 @@
+[Unit]
+Description=Eye Saver - Eye Rest Reminder
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/Code/scripts/eye-saver/eye_saver.py
+Restart=on-failure
+RestartSec=10
+Environment=DISPLAY=:0
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%U/bus
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
