@@ -20,6 +20,9 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SERVICE_FILE="$SCRIPT_DIR/eye-saver.service"
 PYTHON_SCRIPT="$SCRIPT_DIR/eye_saver.py"
+CONFIG_FILE="$SCRIPT_DIR/config.json"
+CONFIG_DIR="$HOME/.config/eye-saver"
+USER_CONFIG="$CONFIG_DIR/config.json"
 
 # Check if running on Linux
 if [[ "$OSTYPE" != "linux-gnu"* ]]; then
@@ -38,6 +41,17 @@ fi
 # Make the Python script executable
 echo -e "${GREEN}Making Python script executable...${NC}"
 chmod +x "$PYTHON_SCRIPT"
+
+# Create config directory and copy config file if it doesn't exist
+echo -e "${GREEN}Setting up configuration...${NC}"
+mkdir -p "$CONFIG_DIR"
+
+if [ ! -f "$USER_CONFIG" ]; then
+    echo -e "${GREEN}Creating default config file at $USER_CONFIG${NC}"
+    cp "$CONFIG_FILE" "$USER_CONFIG"
+else
+    echo -e "${YELLOW}Config file already exists at $USER_CONFIG (not overwriting)${NC}"
+fi
 
 # Create systemd user directory if it doesn't exist
 SYSTEMD_USER_DIR="$HOME/.config/systemd/user"
@@ -77,5 +91,8 @@ echo "  - Restart service: systemctl --user restart eye-saver.service"
 echo "  - Disable service: systemctl --user disable eye-saver.service"
 echo "  - View logs:       journalctl --user -u eye-saver.service -f"
 echo ""
-echo "Log file location: ~/.local/share/eye-saver/eye-saver.log"
+echo "Configuration file: $USER_CONFIG"
+echo "Log file location:  ~/.local/share/eye-saver/eye-saver.log"
+echo ""
+echo "To customize settings, edit the config file and restart the service."
 echo ""

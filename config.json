@@ -1,0 +1,12 @@
+{
+  "short_interval_minutes": 20,
+  "cycles_until_long_break": 3,
+  "start_hour": 0,
+  "end_hour": 24,
+  "notifications": {
+    "short_break_title": "👁️ Eye Rest Reminder",
+    "short_break_message": "Look away from the screen!\n20-20-20 rule: Look at something 20 feet away for 20 seconds.",
+    "long_break_title": "⏰ Time for a Break!",
+    "long_break_message": "You've been working for 1 hour!\nTake a 5-minute break to rest your eyes and stretch."
+  }
+}

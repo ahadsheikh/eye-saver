@@ -23,3 +23,6 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# User config (keep the default config.json in repo)
+# Users will have their config at ~/.config/eye-saver/config.json

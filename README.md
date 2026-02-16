@@ -6,16 +6,19 @@ A simple Python-based eye rest reminder tool for Ubuntu/Linux that helps you fol
 
 - 🔔 **Regular Reminders**: Notifications every 20 minutes to rest your eyes
 - ⏰ **Break Notifications**: After 1 hour (3 cycles), get reminded to take a 5-minute break
-- 🚀 **Auto-start**: Runs automatically on system startup
+- 🕐 **Active Hours**: Runs all day by default (customizable to work hours only)
+- �🚀 **Auto-start**: Runs automatically on system startup
 - 📝 **Logging**: Keeps logs of all notifications sent
 - 🔄 **Background Service**: Runs silently in the background using systemd
 
 ## How It Works
 
 The Eye Saver follows a simple pattern:
-1. Every **20 minutes**: You get a notification to look away from the screen (20-20-20 rule)
-2. After **60 minutes** (3 cycles): You get a more urgent notification to take a 5-minute break
-3. The cycle resets and continues
+1. **Active all day**: By default, runs 24/7 (can be customized to work hours only)
+2. Every **20 minutes**: You get a notification to look away from the screen (20-20-20 rule)
+3. After **60 minutes** (3 cycles): You get a more urgent notification to take a 5-minute break
+4. If you set custom active hours, the service sleeps outside those hours
+5. The cycle resets and continues
 
 This follows the recommended eye care practices:
 - **20-20-20 rule**: Every 20 minutes, look at something 20 feet away for 20 seconds
@@ -94,6 +97,14 @@ cat ~/.local/share/eye-saver/eye-saver.log
 tail -f ~/.local/share/eye-saver/eye-saver.log
 ```
 
+### Configuration Files
+
+The script looks for configuration in these locations (in order):
+1. `~/.config/eye-saver/config.json` (user config, created during installation)
+2. `config.json` in the script directory (fallback)
+
+If no config file is found, default values are used automatically.
+
 ## Uninstallation
 
 To remove Eye Saver:
@@ -107,18 +118,73 @@ This will stop and remove the service. Log files will be preserved but can be ma
 
 ## Customization
 
-You can customize the reminder intervals by editing [eye_saver.py](eye_saver.py):
+Eye Saver uses a JSON configuration file located at `~/.config/eye-saver/config.json`.
 
-```python
-# Edit these values in the __init__ method
-self.short_interval = 20 * 60  # Change 20 to your preferred minutes
-self.cycles_until_long_break = 3  # Change 3 to your preferred number of cycles
+### Edit Configuration
+
+Edit the config file to customize settings:
+
+```bash
+nano ~/.config/eye-saver/config.json
+# or
+code ~/.config/eye-saver/config.json
 ```
 
-After making changes, restart the service:
+**Configuration options:**
+
+```json
+{
+  "short_interval_minutes": 20,
+  "cycles_until_long_break": 3,
+  "start_hour": 0,
+  "end_hour": 24,
+  "notifications": {
+    "short_break_title": "👁️ Eye Rest Reminder",
+    "short_break_message": "Look away from the screen!\n20-20-20 rule: Look at something 20 feet away for 20 seconds.",
+    "long_break_title": "⏰ Time for a Break!",
+    "long_break_message": "You've been working for 1 hour!\nTake a 5-minute break to rest your eyes and stretch."
+  }
+}
+```
+
+**Settings explained:**
+- `short_interval_minutes`: Time between reminders (default: 20 minutes)
+- `cycles_until_long_break`: Number of short breaks before a long break (default: 3 = 60 minutes)
+- `start_hour`: When to start notifications (0-23, default: 0 = midnight)
+- `end_hour`: When to stop notifications (1-24, default: 24 = midnight)
+- `notifications`: Customize notification titles and messages
+
+**Common configurations:**
+
+**All day (default):**
+```json
+"start_hour": 0,
+"end_hour": 24
+```
+
+**Work hours 9 AM to 5 PM:**
+```json
+"start_hour": 9,
+"end_hour": 17
+```
+
+**Work hours 8 AM to 4 PM:**
+```json
+"start_hour": 8,
+"end_hour": 16
+```
+
+**15-minute intervals:**
+```json
+"short_interval_minutes": 15
+```
+
+**After making changes, restart the service:**
 ```bash
 systemctl --user restart eye-saver.service
 ```
+
+**Note:** If the config file doesn't exist or is invalid, the script will use default values automatically.
 
 ## Troubleshooting
 
